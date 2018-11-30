@@ -1,0 +1,31 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "paths": {
+      "gm-zorro-antd": ["../my-app/node_modules/ng-zorro-antd"]
+    },
+    "typeRoots": [],
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  },
+  "exclude": [
+    "./node_modules",
+    "dist"
+  ],
+  "angularCompilerOptions": {
+    "skipLibCheck": true,
+    "fullTemplateTypeCheck": true,
+    "preserveWhitespaces": true
+  }
+}

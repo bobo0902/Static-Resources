@@ -1,0 +1,20 @@
+<nz-select 
+  [nzMode]="nzMode" 
+  [nzAllowClear]="nzAllowClear"
+  [nzOpen]="nzOpen"
+  [nzAutoFocus]="nzAutoFocus"
+  [nzDisabled]="nzDisabled"
+  [nzDropdownClassName]="nzDropdownClassName"
+  [nzDropdownMatchSelectWidth]="nzDropdownMatchSelectWidth"
+  [nzDropdownStyle]="nzDropdownStyle"
+  [nzServerSearch]="nzServerSearch"
+  [nzMaxMultipleCount]="nzMaxMultipleCount"
+  [(ngModel)]="nzModel"
+  [nzNotFoundContent]="nzNotFoundContent"
+  [nzPlaceHolder]="nzPlaceHolder" 
+  [nzSize]="nzSize"
+   style="width: 100%;"
+   nzShowSearch
+>
+<nz-option *ngFor="let option of options" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+</nz-select>
