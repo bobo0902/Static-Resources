@@ -2,7 +2,7 @@
  * @description 数据字典下拉选择
  * @author xb
  */
-import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@angular/core';
+import { Component, Input, forwardRef, OnInit } from '@angular/core';
 import { SelectService } from './select.service';
 import { GM } from '../api';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -95,6 +95,11 @@ export class SelectComponent implements OnInit {
   onTouchedCallback = (value: any) => { };
   // private _dataSource: any;
 
+  private initOptions() {
+    let dicData = GM.get('SysDicOper').dicData;
+    this.options = this._dataTransform(dicData, this.dicType);
+  }
+
   /**
    * @method _dataTransform 处理下拉数据
    * @param data 待处理数组
@@ -134,14 +139,12 @@ export class SelectComponent implements OnInit {
             records.forEach(element => {
               GM.get('SysDicOper').recordDic(element);
             });
-            let dicData = GM.get('SysDicOper').dicData;
-            this.options = this._dataTransform(dicData, this.dicType);
+            this.initOptions();
           }
         }
       );
     } else {
-      let dicData = GM.get('SysDicOper').dicData;
-      this.options = this._dataTransform(dicData, this.dicType);
+      this.initOptions();
     }
   }
 }
