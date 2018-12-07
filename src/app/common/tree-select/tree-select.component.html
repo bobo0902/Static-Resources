@@ -1,8 +1,8 @@
 <nz-tree-select 
-  [nzAllowClear]="nzAllowClear"
+  [nzAllowClear]="true"
   [nzPlaceHolder]="nzPlaceHolder" 
   [nzDisabled]="nzDisabled"
-  [nzShowSearch]="nzShowSearch"
+  nzShowSearch
   [nzDropdownMatchSelectWidth]="nzDropdownMatchSelectWidth"
   [nzDropdownStyle]="nzDropdownStyle"
   [nzMultiple]="nzMultiple"
@@ -14,7 +14,7 @@
   [nzNodes]="nzNodes" 
   [nzDefaultExpandAll]="nzDefaultExpandAll"
   [nzDefaultExpandedKeys]="nzDefaultExpandedKeys"
-  [nzDisplayWith]="nzDisplayWith"
   [(ngModel)]="nzModel"
+  style="width: 100%"
   >
 </nz-tree-select>

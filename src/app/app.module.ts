@@ -6,7 +6,7 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 
 @NgModule({
   declarations: [
-    AppComponentt
+    AppComponent
   ],
   imports: [
     NgZorroAntdModule,

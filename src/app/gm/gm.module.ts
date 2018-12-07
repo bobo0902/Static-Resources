@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 export * from './plugins/httpclient';
 export * from '../common/api';
 export * from '../common/select';
+export * from '../common/tree-select';
 
 export * from '../../globle/base';
 export * from '../../globle/urlconfig';
