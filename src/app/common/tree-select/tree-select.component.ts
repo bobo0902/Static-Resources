@@ -16,6 +16,16 @@ import { GM } from '../../../globle/base';
 export class TreeSelectComponent implements OnInit {
 
   constructor() { }
+  // 监听绑定的值，与外层的ngModel相互绑定
+  set nzModel(val: any) {
+    if (val !== this.ngModel) {
+      this.ngModel = val;
+      this.onChangeCallback(val);
+    }
+  }
+  get nzModel(): any {
+    return this.ngModel;
+  }
   // 引入
   @Input() gmPlaceHolder: string;
   @Input() gmDisabled: boolean;
@@ -26,7 +36,6 @@ export class TreeSelectComponent implements OnInit {
   @Input() gmCheckable: boolean;
   @Input() gmShowExpand: boolean;
   @Input() gmShowLine: boolean;
-  @Input() gmAsyncData: boolean;
   @Input() gmNodes: [];
   @Input() gmDefaultExpandAll: boolean;
   @Input() gmDefaultExpandedKeys: string[];
@@ -43,10 +52,10 @@ export class TreeSelectComponent implements OnInit {
   nzCheckable: boolean;
   nzShowExpand: boolean;
   nzShowLine: boolean;
-  nzAsyncData: boolean;
-  nzNodes: object [];
+  nzNodes: object[];
   nzDefaultExpandAll: boolean;
   nzDefaultExpandedKeys: string[];
+
   registerOnChange(fn: (value: any) => void) {
     this.onChangeCallback = fn;
   }
@@ -56,15 +65,6 @@ export class TreeSelectComponent implements OnInit {
   writeValue(value: any) { }
   onChangeCallback = (value: any) => { };
   onTouchedCallback = (value: any) => { };
-  // 监听绑定的值，与外层的ngModel相互绑定
-  set nzModel(val: any) {
-    if (val !== this.ngModel) {
-      this.ngModel = val;
-    }
-  }
-  get nzModel(): any {
-    return this.ngModel;
-  }
   /**
    * @description 初始化树节点数据
    * @method initTreeNodeList
@@ -78,11 +78,13 @@ export class TreeSelectComponent implements OnInit {
         // }
         if (!element[this.config['key']]) {
           element[this.config['key']] = null;
-         }
+        }
         Object.assign(element, { key: element[this.config['key']], children: element['childrens'] });
         if (element['childrens']) {
           this.initTreeNodeList(element['childrens']);
-         }
+        } else {
+          element['isLeaf'] = true;
+        }
       });
     }
     return arr;
@@ -92,37 +94,16 @@ export class TreeSelectComponent implements OnInit {
     // 初始化
     this.nzPlaceHolder = this.gmPlaceHolder;
     this.nzDisabled = this.gmDisabled;
-    this.nzDropdownMatchSelectWidth = this.gmDropdownMatchSelectWidth;
-    this.nzDropdownStyle = this.gmDropdownStyle;
-    this.nzMultiple = this.gmMultiple;
+    this.nzDropdownMatchSelectWidth = this.gmDropdownMatchSelectWidth || true;
+    this.nzDropdownStyle = this.gmDropdownStyle || { 'max-height': '300px' };
+    this.nzMultiple = this.gmMultiple || false;
     this.nzSize = this.gmSize;
-    this.nzCheckable = this.gmCheckable;
-    this.nzShowExpand = this.gmShowExpand;
-    this.nzShowLine = this.gmShowLine;
-    this.nzAsyncData = this.gmAsyncData;
-    this.nzDefaultExpandAll = this.gmDefaultExpandAll;
+    this.nzCheckable = this.gmCheckable || false;
+    this.nzShowExpand = this.gmShowExpand || true;
+    this.nzShowLine = this.gmShowLine || false;
+    this.nzDefaultExpandAll = this.gmDefaultExpandAll || false;
     this.nzDefaultExpandedKeys = this.gmDefaultExpandedKeys;
-    let treeNodeList = [...GM.get('userInfo').areas];
-    // this.nzNodes = this.initTreeNodeList(treeNodeList);
-    this.nzNodes = [{
-      title: 'parent 1',
-      key: '100',
-      children: [{
-        title: 'parent 1-0',
-        key: '1001',
-        children: [
-          { title: 'leaf 1-0-0', key: '10010', isLeaf: true },
-          { title: 'leaf 1-0-1', key: '10011', isLeaf: true }
-        ]
-      }, {
-        title: 'parent 1-1',
-        key: '1002',
-        children: [
-          { title: 'leaf 1-1-0', key: '10020', isLeaf: true }
-        ]
-      }]
-    }];
-    console.log(this.nzNodes);
+    this.nzNodes = this.initTreeNodeList(GM.get('userInfo').areas);
   }
 
 }

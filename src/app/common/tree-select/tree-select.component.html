@@ -1,20 +1,22 @@
-<nz-tree-select 
-  [nzAllowClear]="true"
-  [nzPlaceHolder]="nzPlaceHolder" 
-  [nzDisabled]="nzDisabled"
-  nzShowSearch
-  [nzDropdownMatchSelectWidth]="nzDropdownMatchSelectWidth"
-  [nzDropdownStyle]="nzDropdownStyle"
-  [nzMultiple]="nzMultiple"
-  [nzSize]="nzSize"
-  [nzCheckable]="nzCheckable"
-  [nzShowExpand]="nzShowExpand"
-  [nzShowLine]="nzShowLine"
-  [nzAsyncData]="nzAsyncData"
-  [nzNodes]="nzNodes" 
-  [nzDefaultExpandAll]="nzDefaultExpandAll"
-  [nzDefaultExpandedKeys]="nzDefaultExpandedKeys"
-  [(ngModel)]="nzModel"
-  style="width: 100%"
-  >
-</nz-tree-select>
+<ng-container>
+  <nz-tree-select 
+    [nzAllowClear]="true"
+    [nzPlaceHolder]="nzPlaceHolder" 
+    [nzDisabled]="nzDisabled"
+    nzShowSearch
+    [nzDropdownMatchSelectWidth]="nzDropdownMatchSelectWidth"
+    [nzDropdownStyle]="nzDropdownStyle"
+    [nzMultiple]="nzMultiple"
+    [nzSize]="nzSize"
+    [nzCheckable]="nzCheckable"
+    [nzShowExpand]="nzShowExpand"
+    [nzShowLine]="nzShowLine"
+    [nzNodes]="nzNodes" 
+    [nzAsyncData]="true"
+    [nzDefaultExpandAll]="nzDefaultExpandAll"
+    [nzDefaultExpandedKeys]="nzDefaultExpandedKeys"
+    [(ngModel)]="nzModel"
+    style="width: 100%"
+    >
+  </nz-tree-select>
+</ng-container>

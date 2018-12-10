@@ -3,7 +3,7 @@ import { Cookie } from './cookie';
 import { UUMS_SERVER, LOGIN_SERVER } from '../../../globle/urlconfig';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
-import { of } from 'rxjs';
+import { of, forkJoin } from 'rxjs';
 
 
 export class UserRegions {
@@ -22,34 +22,42 @@ export class UserRegions {
         url: `${LOGIN_SERVER}/decrypt.do?token=${this.getToken.getCookie('clientCliToken')}`,
         responseType: 'json'
       })
-      .pipe(map(res => {
-        if (!res.response) {
-          throw new Error('Value expected!');
-        }
-        return res.response;
-      }),
-      mergeMap(appResponse => {
-        let userId: string;
-        if (appResponse && appResponse.data.userId) {
-          userId = appResponse.data.userId;
-        }
-        return ajax({
-          url: `${UUMS_SERVER}user/get?userId=${userId}`,
-          responseType: 'json'
-        })
-          .pipe(map(res => {
-            if (!res.response) {
-              throw new Error('Value expected!');
-            }
-            return res.response;
-          }));
-      })).subscribe(response => {
-        userInfo = response.data;
-        GM.set('userInfo', userInfo);
-        // 接下来异步维护areas/organizations
-        this.setAreas(userInfo.organizations);
-        this.setOrganization(userInfo.organizations);
-      });
+        .pipe(map(res => {
+          if (!res.response) {
+            throw new Error('Value expected!');
+          }
+          return res.response;
+        }))
+        .subscribe(response => {
+          let userId: string;
+          if (response && response.data.userId) {
+            userId = response.data.userId;
+          }
+          let getUser = ajax({
+            url: `${UUMS_SERVER}user/get?userId=${userId}`,
+            responseType: 'json',
+            async: false
+          });
+          let getAreas = ajax({
+            url: `${UUMS_SERVER}area/tree`,
+            responseType: 'json',
+            async: false
+          });
+          let getOrganizations = ajax({
+            url: `${UUMS_SERVER}organization/tree`,
+            responseType: 'json',
+            async: false
+          });
+
+          forkJoin([getUser, getAreas, getOrganizations])
+            .subscribe(results => {
+              console.log(results);
+              userInfo = results[0].response.data;
+              GM.set('userInfo', userInfo);
+              this.setAreas(userInfo.organizations, results[1].response);
+              this.setOrganization(userInfo.organizations, results[2].response);
+            });
+        });
     }
   }
 
@@ -57,31 +65,19 @@ export class UserRegions {
    * @description 设置辖区数据
    * @method setAreas
    * @param {Array} arr organizations数据
+   * @param {object} response 请求数据
    */
-  setAreas(arr) {
+  setAreas(arr, response) {
     let arrayAreas: Array<object>[] = [];
-    ajax({
-      url: `${UUMS_SERVER}area/tree`,
-      responseType: 'json'
-    }).pipe(
-      map(res => {
-        if (!res.response) {
-          throw new Error('Value expected!');
-        }
-        return res.response;
-      }),
-      catchError(err => of([]))
-    ).subscribe(response => {
-      arr.forEach(element => {
-        let strAreaId = element.areaId;
-        let pAreaData = this.getDataFromAreaId(strAreaId, response.data);
-        if (pAreaData != null) {
-          arrayAreas.push(pAreaData);
-        }
-      });
-      this.setAreaSql(arrayAreas);
-      GM.get('userInfo').areas = arrayAreas;
+    arr.forEach(element => {
+      let strAreaId = element.areaId;
+      let pAreaData = this.getDataFromAreaId(strAreaId, response.data);
+      if (pAreaData != null) {
+        arrayAreas.push(pAreaData);
+      }
     });
+    this.setAreaSql(arrayAreas);
+    GM.get('userInfo').areas = arrayAreas;
   }
 
   /**
@@ -163,33 +159,21 @@ export class UserRegions {
      * @description 设置组织机构信息
      * @method setOrganization
      * @param {Array} organizations 机构合集
+     * @param {object} response 请求数据
      */
-  setOrganization(organizations) {
-    ajax({
-      url: `${UUMS_SERVER}organization/tree`,
-      responseType: 'json'
-    }).pipe(
-      map(res => {
-        if (!res.response) {
-          throw new Error('Value expected!');
-        }
-        return res.response;
-      }),
-      catchError(err => of([]))
-    ).subscribe(response => {
-      let arrayAllData = this.getAllNodes(response.data, 'childrens');
-      let arrayOrganizations = [];
-      for (let ii = 0; ii < organizations.length; ii++) {
-        let strId = organizations[ii].id;
-        for (let jj = 0; jj < arrayAllData.length; jj++) {
-          if (arrayAllData[jj].id === strId) {
-            arrayOrganizations.push(arrayAllData[jj]);
-            break;
-          }
+  setOrganization(organizations, response) {
+    let arrayAllData = this.getAllNodes(response.data, 'childrens');
+    let arrayOrganizations = [];
+    for (let ii = 0; ii < organizations.length; ii++) {
+      let strId = organizations[ii].id;
+      for (let jj = 0; jj < arrayAllData.length; jj++) {
+        if (arrayAllData[jj].id === strId) {
+          arrayOrganizations.push(arrayAllData[jj]);
+          break;
         }
       }
-      GM.get('userInfo').organizations = arrayOrganizations;
-    });
+    }
+    GM.get('userInfo').organizations = arrayOrganizations;
   }
 
   /**
