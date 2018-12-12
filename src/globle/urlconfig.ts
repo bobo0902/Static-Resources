@@ -7,5 +7,6 @@ export const RESTURL = {
   login: `${LOGIN_SERVER}login`,
   checkTokenByAppKey: `${LOGIN_SERVER}checkTokenByAppKey`,
   // 综合查询
-  integratedQuery: `${ZRZY_SERVER}api/queryRegistrationInfo/getComprehensivePageList`
+  integratedQuery: `${ZRZY_SERVER}api/queryRegistrationInfo/getComprehensivePageList`,
+  getComprehensiveInfo: `${ZRZY_SERVER}api/queryRegistrationInfo/getComprehensiveInfo`// 获取详情表格数据
 };
