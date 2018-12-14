@@ -7,6 +7,7 @@ import { Observable, throwError, of } from 'rxjs';
 import { retry, catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { HttpclientBaseService } from './base.service';
+import { Cookie } from '../../../common/api/cookie';
 
 export interface GmOptions {
   headers?: HttpHeaders | {
@@ -17,7 +18,7 @@ export interface GmOptions {
     [param: string]: string | string[];
   };
   reportProgress?: boolean;
-  // responseType?: 'arraybuffer';
+  responseType?: string;
   withCredentials?: boolean;
 }
 
@@ -28,6 +29,7 @@ export interface GmOptions {
 export class HttpClientService {
   constructor(
     private http: HttpClient,
+    private cookie = new Cookie()
   ) { }
 
   private httpclientBaseService = new HttpclientBaseService();
@@ -45,7 +47,7 @@ export class HttpClientService {
       // The response body may contain clues as to what went wrong,
       console.error(
         `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+        `body was: ${error.message}`);
     }
     // return an observable with a user-facing error message
     return throwError('Something bad happened; please try again later.');
@@ -68,6 +70,27 @@ export class HttpClientService {
     }
     const getOptions = options ? Object.assign({ headers }, options) : { headers };
     return this.http.get<any>(url, getOptions)
+      .pipe(
+        retry(3),
+        catchError(err => this.handleError(err))
+      );
+  }
+  /**
+   * @description post方法
+   * @param url 请求地址
+   * @param gmBody 请求参数
+   * @param options 自定义设置
+   */
+  postRequest(url: string, gmBody?: any, options?: GmOptions): Observable<any> {
+    let contentType: string;
+    // tslint:disable-next-line:no-unused-expression
+    options.responseType === 'json' ? contentType = 'application/json;charset=UTF-8' : 'application/x-www-form-urlencoded';
+
+    // 处理请求头
+    const headers = new HttpHeaders().set('Content-Type', contentType);
+    const getOptions = options ? Object.assign({ headers }, options) : { headers };
+
+    return this.http.post<any>(url, gmBody, getOptions)
       .pipe(
         retry(3),
         catchError(err => this.handleError(err))

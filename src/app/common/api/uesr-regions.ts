@@ -51,7 +51,6 @@ export class UserRegions {
 
           forkJoin([getUser, getAreas, getOrganizations])
             .subscribe(results => {
-              console.log(results);
               userInfo = results[0].response.data;
               GM.set('userInfo', userInfo);
               this.setAreas(userInfo.organizations, results[1].response);

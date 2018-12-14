@@ -15,6 +15,7 @@ const SysDicOper = {
 
 GM.set('SysDicOper', SysDicOper);
 
+export { GM };
 /*
  * Usage:
  *   value | transformDic:dicName
@@ -29,15 +30,10 @@ export class TransformDicPipe implements PipeTransform {
     if (typeof value !== 'string' || !arr) {
       throw new Error('Invalid pipe argument for transformDic');
     }
-    arr.forEach(element => {
-      if (value === element.value) {
-        newValue = element.label;
-        return;
-      }
-    });
+    let newArr = arr.find(element => element.value === value);
+    if (newArr) {
+      newValue = newArr.label;
+    }
     return newValue;
   }
 }
-
-export { GM };
-

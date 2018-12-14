@@ -1,0 +1,51 @@
+<nz-layout class="layout max-height">
+  <nz-header>
+    <div class="logo">ANGULAR7-DEMO</div>
+  </nz-header>
+  <nz-layout class="max-height">
+    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate">
+      <ul nz-menu [nzTheme]="'light'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+        <ng-container *ngFor="let item of navi; let i = index;">
+          <!-- 无子节点 -->
+          <li class="nav-item" nz-menu-item *ngIf="!item.children" routerLink="{{item.path}}" routerLinkActive #rla="routerLinkActive"
+            [nzSelected]="rla.isActive"><span><i nz-icon [type]="item.class"></i><span class="nav-text">{{item.name}}</span></span></li>
+          <!-- 有子节点 -->
+          <li class="nav-item" nz-submenu *ngIf="item.children" routerLinkActive #rla="routerLinkActive" [nzOpen]="rla.isActive && !isCollapsed"
+            [class.ant-menu-item-selected]="isCollapsed && rla.isActive">
+            <span title><i nz-icon [type]="item.class"></i><span class="nav-text">{{item.name}}</span></span>
+            <ul>
+              <li nz-menu-item *ngFor="let subItem of item.children" routerLink="{{item.path+subItem.path}}"
+                routerLinkActive="ant-menu-item-selected">
+                <!-- <i nz-icon [type]="subItem.class"></i> -->
+                {{subItem.name}}
+              </li>
+            </ul>
+          </li>
+        </ng-container>
+      </ul>
+      <ng-template #trigger>
+        <i class="trigger" nz-icon [type]="isCollapsed?'right-circle':'left-circle'" theme="outline"></i>
+      </ng-template>
+    </nz-sider>
+    <!-- 路由+标签页模式 -->
+    <nz-content class="container">
+      <nz-tabset [nzType]="'card'" [nzSelectedIndex]="tabActiveIndex" class="tabs">
+        <nz-tab *ngFor="let tab of tabs" [nzTitle]="titleTemplate" (nzClick)="to(tab)">
+          <ng-template #titleTemplate>
+            <div>{{ tab.title }}<i nz-icon type="close" class="ant-tabs-close-x" (click)="closeTab(tab.url,$event)"></i></div>
+          </ng-template>
+        </nz-tab>
+      </nz-tabset>
+      <nz-content class="container-content">
+        <router-outlet></router-outlet>
+      </nz-content>
+    </nz-content>
+    <!-- 路由模式 -->
+    <!-- <nz-content class="container">
+      <nz-content class="container-content">
+        <router-outlet></router-outlet>
+      </nz-content>
+    </nz-content> -->
+  </nz-layout>
+</nz-layout>
+
