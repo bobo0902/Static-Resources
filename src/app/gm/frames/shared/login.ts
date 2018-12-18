@@ -2,7 +2,7 @@ import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Cookie } from '../../../common/api';
-import { APP_KEY, RESTURL } from '../../../../globle/urlconfig';
+import { APP_KEY, LOGIN_SERVER } from 'url-config';
 
 export class Login {
   constructor() {
@@ -14,7 +14,7 @@ export class Login {
    */
   login() {
     ajax({
-      url: `${RESTURL.login}?username=gss&password=As5RPtiDBTUGkv3OzPsQRg==&appKey=${APP_KEY}`,
+      url: `${LOGIN_SERVER}login?username=gss&password=As5RPtiDBTUGkv3OzPsQRg==&appKey=${APP_KEY}`,
       responseType: 'json',
       async: false
     }).pipe(
@@ -36,7 +36,7 @@ export class Login {
    */
   isTokenValid(strToken) {
     ajax({
-      url: `${RESTURL.checkTokenByAppKey}?token=${strToken}&appKey=${APP_KEY}`,
+      url: `${LOGIN_SERVER}checkTokenByAppKey?token=${strToken}&appKey=${APP_KEY}`,
       responseType: 'json',
       async: false
     }).pipe(

@@ -1,9 +1,9 @@
 import { GM } from '../../../globle/base';
 import { Cookie } from './cookie';
-import { UUMS_SERVER, LOGIN_SERVER } from '../../../globle/urlconfig';
-import { mergeMap, map, catchError } from 'rxjs/operators';
+import { UUMS_SERVER, LOGIN_SERVER } from 'url-config';
+import { map } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
-import { of, forkJoin } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 
 export class UserRegions {

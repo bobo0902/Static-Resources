@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GM } from '../api/data-dictionary';
-import { APP_KEY, UUMS_SERVER } from '../../../globle/urlconfig';
+import { APP_KEY, UUMS_SERVER } from 'url-config';
 import { mergeMap } from 'rxjs/operators';
 import { AjaxApi } from '../api';
 

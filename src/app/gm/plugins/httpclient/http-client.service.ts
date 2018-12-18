@@ -28,10 +28,9 @@ export interface GmOptions {
 })
 export class HttpClientService {
   constructor(
-    private http: HttpClient,
-    private cookie = new Cookie()
+    private http: HttpClient
   ) { }
-
+  private cookie = new Cookie();
   private httpclientBaseService = new HttpclientBaseService();
 
   /**
