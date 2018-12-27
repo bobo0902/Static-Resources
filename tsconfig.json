@@ -12,7 +12,7 @@
     "target": "es5",
     "paths": {
       "gm-zorro-antd": ["../my-app/node_modules/ng-zorro-antd"],
-      "url-config": ["../my-app/src/config/congig"]
+      "url-config": ["../my-app/src/config/config"]
     },
     "typeRoots": [],
     "lib": [
