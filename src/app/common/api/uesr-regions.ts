@@ -2,13 +2,15 @@ import { GM } from '../../../globle/base';
 import { Cookie } from './cookie';
 import { UUMS_SERVER, LOGIN_SERVER } from 'url-config';
 import { map } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
 import { forkJoin } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { AjaxApi } from './ajax';
 
 
 export class UserRegions {
   constructor(
-    private getToken = new Cookie()
+    private getToken = new Cookie(),
+    private gmAjax = new AjaxApi()
   ) { }
 
   /**
@@ -24,7 +26,7 @@ export class UserRegions {
       })
         .pipe(map(res => {
           if (!res.response) {
-            throw new Error('Value expected!');
+            throw new Error(res['message']);
           }
           return res.response;
         }))
@@ -33,28 +35,15 @@ export class UserRegions {
           if (response && response.data.userId) {
             userId = response.data.userId;
           }
-          let getUser = ajax({
-            url: `${UUMS_SERVER}user/get?userId=${userId}`,
-            responseType: 'json',
-            async: false
-          });
-          let getAreas = ajax({
-            url: `${UUMS_SERVER}area/tree`,
-            responseType: 'json',
-            async: false
-          });
-          let getOrganizations = ajax({
-            url: `${UUMS_SERVER}organization/tree`,
-            responseType: 'json',
-            async: false
-          });
-
+          let getUser = this.gmAjax.ajaxRequest(`${UUMS_SERVER}user/get`, { userId: `${userId}` }, { method: `get` }, true);
+          let getAreas = this.gmAjax.ajaxRequest(`${UUMS_SERVER}area/tree`, null, { method: `get` }, true);
+          let getOrganizations = this.gmAjax.ajaxRequest(`${UUMS_SERVER}organization/tree`, null, { method: `get` }, true);
           forkJoin([getUser, getAreas, getOrganizations])
             .subscribe(results => {
-              userInfo = results[0].response.data;
+              userInfo = results[0].data;
               GM.set('userInfo', userInfo);
-              this.setAreas(userInfo.organizations, results[1].response);
-              this.setOrganization(userInfo.organizations, results[2].response);
+              this.setAreas(userInfo.organizations, results[1]);
+              this.setOrganization(userInfo.organizations, results[2]);
             });
         });
     }

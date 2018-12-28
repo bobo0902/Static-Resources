@@ -85,9 +85,8 @@ export class AjaxApi  {
       if (value instanceof Array) {
         for (i = 0; i < value.length; ++i) {
           subValue = value[i];
-          fullSubName = name + '[' + i + ']';
           innerObj = {};
-          innerObj[fullSubName] = subValue;
+          innerObj[name] = subValue;
           query += this.param(innerObj) + '&';
         }
       } else if (value instanceof Object) {

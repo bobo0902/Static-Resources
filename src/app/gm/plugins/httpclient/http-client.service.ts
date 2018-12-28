@@ -3,11 +3,12 @@
  * @author xb
  */
 import { Injectable } from '@angular/core';
-import { Observable, throwError, of } from 'rxjs';
-import { retry, catchError, map } from 'rxjs/operators';
+import { Observable, throwError, from , forkJoin } from 'rxjs';
+import { retry, catchError, map, debounceTime } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { HttpclientBaseService } from './base.service';
-import { Cookie } from '../../../common/api/cookie';
+import { GmArray, AjaxApi } from '../../../common/api';
+import { ajax } from 'rxjs/ajax';
 
 export interface GmOptions {
   headers?: HttpHeaders | {
@@ -22,6 +23,11 @@ export interface GmOptions {
   withCredentials?: boolean;
 }
 
+interface Result {
+  success: boolean;
+  data: Array<object>;
+  originalResponse?: Array<object>;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -30,8 +36,9 @@ export class HttpClientService {
   constructor(
     private http: HttpClient
   ) { }
-  private cookie = new Cookie();
   private httpclientBaseService = new HttpclientBaseService();
+  private ajax = new AjaxApi();
+  private gmArray = new GmArray();
 
   /**
    * @description 错误处理
@@ -70,6 +77,7 @@ export class HttpClientService {
     const getOptions = options ? Object.assign({ headers }, options) : { headers };
     return this.http.get<any>(url, getOptions)
       .pipe(
+        debounceTime(1000),
         retry(3),
         catchError(err => this.handleError(err))
       );
@@ -91,8 +99,67 @@ export class HttpClientService {
 
     return this.http.post<any>(url, gmBody, getOptions)
       .pipe(
+        debounceTime(1000),
         retry(3),
         catchError(err => this.handleError(err))
       );
   }
+  /**
+   * @description 多次请求
+   * @param url 请求路径
+   * @param requestTimes 分几次请求
+   * @param multiAttName 需要分解的属性名
+   * @param gmParams 请求参数
+   * @param options 自定义设置
+   */
+  multipleGetRequest(url: string, requestTimes: number, multiAttName?: string, gmParams?: object, options?: GmOptions): Observable<any> {
+    let requestList: Array<object> = [];
+    let arrayItems: Array<object> = [];
+    // let result$;
+    // 分割数组
+    if (gmParams) {
+      arrayItems = this.gmArray.getMeanArrays(gmParams[multiAttName], requestTimes);
+    }
+
+    let arrayItemsLen = arrayItems.length;
+    for (let i = 0; i < requestTimes; i++) {
+      let gmParamsClone = { ...gmParams };
+      if (arrayItemsLen > 0) {
+        gmParamsClone[multiAttName] = arrayItems[i];
+      }
+      // 使用同步请求页面阻塞，体验不好
+      // requestList.push(this.ajax.ajaxRequest(url, gmParamsClone, { method: `get` }, true));
+      requestList.push(this.getRequest(url, gmParamsClone));
+    }
+    // forkJoin(requestList).subscribe(results => {
+    //   let res = this.processResult(results);
+    //   result$ = Observable.create(function (observer) {
+    //     observer.next(res);
+    //   });
+    // });
+    // return result$;
+    return forkJoin(requestList);
+  }
+
+  /**
+   * @description 处理多次请求数据
+   * @param results 待处理数据
+   */
+  processResult(results: Array<Result>) {
+    let result: Result = {
+      success: true,
+      data: [],
+      originalResponse: results
+    };
+    if (this.gmArray.isArray(results)) {
+      results.forEach(e => {
+        if (!e.success) {
+          console.error(`请求数据失败`);
+          return;
+        }
+        result.data = [...result.data, ...e.data];
+      });
+    }
+    return result;
+   }
 }
