@@ -14,7 +14,7 @@ export class Cookie {
      * @param {String} value cookie值
      * @param {Number} expiresDays 多少天后会过期
      */
-  addCookie(name, value, expiresDays) {
+  addCookie(name, value, expiresDays?: number) {
     let cookieString = name + '=' + escape(value);
     if (expiresDays > 0) {
       let date = new Date();
@@ -42,13 +42,14 @@ export class Cookie {
    * @return {String} cookie值
    */
   getCookie(name) {
-    let strCookie = document.cookie;
-    let arrCookie = strCookie.split('; ');
+    let strCookie = document.cookie.replace(/\s+/g, '');
+    let arrCookie = strCookie.split(';');
     for (let i = 0; i < arrCookie.length; i++) {
       let arr = arrCookie[i].split('=');
       if (arr[0] === name) {
         return unescape(arr[1]);
       }
     }
+    return '';
   }
 }

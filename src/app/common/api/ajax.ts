@@ -1,5 +1,5 @@
-import { Subscriber, of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { of } from 'rxjs';
+import { ajax, AjaxRequest } from 'rxjs/ajax';
 import { retry, map, catchError } from 'rxjs/operators';
 import { Cookie } from './cookie';
 
@@ -8,25 +8,7 @@ import { Cookie } from './cookie';
  * @author xb
  */
 
-interface AjaxRequest {
-  url?: string; // URL of the request
-  body?: any;  // The body of the request
-  user?: string;
-  async?: boolean; // Whether the request is async
-  method?: string; // Method of the request, such as GET, POST, PUT, PATCH, DELETE
-  headers?: Object; // Optional headers
-  timeout?: number;
-  password?: string;
-  hasContent?: boolean;
-  crossDomain?: boolean; // true if a cross domain request, else false
-  withCredentials?: boolean;
-  createXHR?: () => XMLHttpRequest; // a function to override if you need to use an alternate XMLHttpRequest implementation
-  progressSubscriber?: Subscriber<any>;
-  responseType?: string;
-}
-
-
-export class AjaxApi  {
+export class AjaxApi {
   /**
    * @method ajaxRequest
    * @description ajax请求
@@ -35,7 +17,7 @@ export class AjaxApi  {
    * @param {object} settings 设置
    * @param {boolean} btoken 是否添加token
    */
-  ajaxRequest(url, data, settings?: AjaxRequest, btoken?) {
+  ajaxRequest(url, data, settings?: AjaxRequest, btoken?: boolean) {
     let headers = {};
     let getToken = new Cookie();
     if (settings && settings.method.toUpperCase() === 'GET') {
@@ -51,7 +33,7 @@ export class AjaxApi  {
     };
     if (settings) {
       Object.assign(defaultSettings, settings);
-     }
+    }
     // 是否添加token
     if (btoken) {
       let token = getToken.getCookie('clientCliToken');
@@ -65,7 +47,7 @@ export class AjaxApi  {
         }
         return res.response;
       }),
-      catchError(err => of([]))
+      catchError(err => of([err]))
     );
     return apiData$;
   }
@@ -75,7 +57,7 @@ export class AjaxApi  {
    * @description get请求处理数据
    * @param {object} obj 请求对象
    */
-  param(obj) {
+  param(obj: object) {
     let query = '', name, value, fullSubName, subName, subValue, innerObj, i;
 
     // tslint:disable-next-line:forin

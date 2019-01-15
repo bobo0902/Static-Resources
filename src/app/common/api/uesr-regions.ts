@@ -8,11 +8,8 @@ import { AjaxApi } from './ajax';
 
 
 export class UserRegions {
-  constructor(
-    private getToken = new Cookie(),
-    private gmAjax = new AjaxApi()
-  ) { }
-
+  private getToken = new Cookie();
+  private gmAjax = new AjaxApi();
   /**
    * @description 获取用户
    * @method getUser
@@ -35,7 +32,7 @@ export class UserRegions {
           if (response && response.data.userId) {
             userId = response.data.userId;
           }
-          let getUser = this.gmAjax.ajaxRequest(`${UUMS_SERVER}user/get`, { userId: `${userId}` }, { method: `get` }, true);
+          let getUser = this.gmAjax.ajaxRequest(`${UUMS_SERVER}user/get`, { userId: userId }, { method: `get` }, true);
           let getAreas = this.gmAjax.ajaxRequest(`${UUMS_SERVER}area/tree`, null, { method: `get` }, true);
           let getOrganizations = this.gmAjax.ajaxRequest(`${UUMS_SERVER}organization/tree`, null, { method: `get` }, true);
           forkJoin([getUser, getAreas, getOrganizations])

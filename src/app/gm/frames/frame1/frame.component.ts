@@ -5,6 +5,7 @@ import { filter, map, mergeMap } from 'rxjs/operators';
 import { ReuseStrategyService } from '../reuse-strategy';
 import { Login } from '../shared/login';
 import { Cookie, UserRegions } from '../../../common/api';
+import { NzMessageService } from 'gm-zorro-antd';
 
 interface FrameConfig {
   navi: Array<object>;
@@ -26,7 +27,7 @@ export class Fram1Component {
   tabActiveIndex: Number = 0;
 
   // 登录
-  login = new Login();
+  login = new Login(this.message);
   cookie = new Cookie();
   userInfo = new UserRegions();
 
@@ -57,7 +58,8 @@ export class Fram1Component {
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private titleService: Title
+    private titleService: Title,
+    private message: NzMessageService
   ) {
     this.router.events
       .pipe(
