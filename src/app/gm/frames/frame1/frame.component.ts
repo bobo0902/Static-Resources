@@ -2,10 +2,11 @@ import { Component, ViewChild, TemplateRef, Input } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { filter, map, mergeMap } from 'rxjs/operators';
-import { ReuseStrategyService } from '../reuse-strategy';
-import { Login } from '../shared/login';
-import { Cookie, UserRegions } from '../../../common/api';
-import { NzMessageService } from 'gm-zorro-antd';
+import { ReuseStrategyService } from '../route/reuse-strategy';
+import { Login } from '../login/login';
+import { Cookie, UserRegions, GM } from '../../../common/api';
+import { NzMessageService } from 'ng-zorro-antd';
+import { LOGIN_PATH } from 'url-config';
 
 interface FrameConfig {
   navi: Array<object>;
@@ -25,11 +26,13 @@ export class Fram1Component {
   navi: Array<object> = [];
   tabs: Array<{ title: string, url: string }> = [];
   tabActiveIndex: Number = 0;
+  // 用户信息
+  userInfo$ = {};
 
   // 登录
   login = new Login(this.message);
   cookie = new Cookie();
-  userInfo = new UserRegions();
+  getUserInfo = new UserRegions(this.message);
 
   to(item) {
     // this.router.navigate([item.url]);
@@ -53,6 +56,14 @@ export class Fram1Component {
     // 显示当前路由信息
     // this.router.navigate([menu.url]);
     this.router.navigateByUrl(menu.url);
+  }
+
+  setUserInfo() {
+    this.userInfo$ = GM.get('userInfo');
+  }
+
+  logout() {
+    this.login.logout(LOGIN_PATH);
   }
 
   constructor(
@@ -90,14 +101,14 @@ export class Fram1Component {
   ngOnInit() {
     this.navi = this.GLOBAL_FRAME_CONFIG.navi;
     this.triggerTemplate = this.customTrigger;
-    // 临时登录
+    // 验证登录
     let strToken = this.cookie.getCookie('clientCliToken');
     if (strToken) {
       this.login.isTokenValid(strToken);
     } else {
-      this.login.login();
+      this.login.logout(LOGIN_PATH);
     }
-    this.userInfo.getUser();
+    this.getUserInfo.getUser();
   }
 }
 

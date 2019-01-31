@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "../",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -11,8 +11,8 @@
     "experimentalDecorators": true,
     "target": "es5",
     "paths": {
-      "gm-zorro-antd": ["../my-app/node_modules/ng-zorro-antd"],
-      "url-config": ["../my-app/src/config/config"]
+      "@angular/*": ["node_modules/@angular/*"],
+      "url-config": ["./config"]
     },
     "typeRoots": [],
     "lib": [

@@ -1,22 +1,19 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { SharedModule } from './shared/shared.modules';
 
-export * from './plugins/httpclient';
-export * from './plugins/http-interceptors';
-export * from '../common/api';
-export * from '../common/select';
-export * from '../common/tree-select';
-
-export * from '../../globle/base';
 
 // 框架模版
 export * from './frames';
+
+// 管道相关
+export * from './plugins/pipes';
+
 @NgModule({
   imports: [
-    CommonModule
+    SharedModule
   ],
   exports: [
-    CommonModule
+    SharedModule
   ]
 })
 export class GmModule { }

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { NgZorroAntdModule } from 'gm-zorro-antd';
+import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { SelectComponent } from './select.component';
 import { SelectService } from './select.service';
 @NgModule({

@@ -11,10 +11,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Get the auth token from the service.
-    const authToken =  this.cookie.getCookie('clientCliToken');
+    const authToken = this.cookie.getCookie('clientCliToken') || `token`;
 
     // Clone the request and set the new header in one step.
-    const authReq = req.clone({ setHeaders: { token: authToken || `token` } });
+    const authReq = req.clone({ setHeaders: { token: authToken } });
 
     // send cloned request with header to the next handler.
     return next.handle(authReq);

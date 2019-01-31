@@ -5,9 +5,13 @@ import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { AjaxApi } from './ajax';
+import { NzMessageService } from 'ng-zorro-antd';
 
 
 export class UserRegions {
+  constructor(
+    private message: NzMessageService
+  ) { }
   private getToken = new Cookie();
   private gmAjax = new AjaxApi();
   /**
@@ -23,6 +27,7 @@ export class UserRegions {
       })
         .pipe(map(res => {
           if (!res.response) {
+            this.message.create('error', `获取用户失败`);
             throw new Error(res['message']);
           }
           return res.response;

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgZorroAntdModule } from 'gm-zorro-antd';
+import { NgZorroAntdModule } from 'ng-zorro-antd';
 
 import { TreeSelectComponent } from './tree-select.component';
 import { TreeSelectService } from './tree-select.service';

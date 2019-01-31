@@ -1,4 +1,4 @@
-import { NzMessageService } from 'gm-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd';
 import { Cookie, AjaxApi, GmDes } from '../../../common/api';
 import { APP_KEY, LOGIN_SERVER } from 'url-config';
 
@@ -14,22 +14,35 @@ export class Login {
   /**
    * @description 登录
    * @method login
+   * @param username 用户名
+   * @param password 密码
+   * @param url 登录成功跳转地址
    */
-  login() {
-    let pasdword = this.gmDes.encryptByDES('gss123123');
-    console.log(pasdword);
-    console.log('解密：' + this.gmDes.decryptByDES(pasdword));
+  login(username: string, password: string, url: string) {
+    let pasdword = this.gmDes.encryptByDES(password);
     this.gmAjax.ajaxRequest(
       `${LOGIN_SERVER}login`,
-      { username: `gss`, password: pasdword, appKey: APP_KEY },
+      { username: username, password: pasdword, appKey: APP_KEY },
       { method: `get` }
     ).subscribe(response => {
       if (!response.data || response.data.gmsso_ser_ec_key === '' || response.data.gmsso_cli_ec_key === '') {
+        this.message.create('error', response.message);
         throw new Error(`获取token失败`);
       }
       this.cookie.addCookie('clientServerToken', response.data.gmsso_ser_ec_key, (1 / 48));
       this.cookie.addCookie('clientCliToken', response.data.gmsso_cli_ec_key);
+      window.location.href = url;
     });
+  }
+  /**
+   * @description 登出
+   * @method logout
+   * @param url 登出成功跳转地址
+   */
+  logout(url: string) {
+    this.cookie.removeCookie('clientServerToken');
+    this.cookie.removeCookie('clientCliToken');
+    window.location.href = url;
   }
   /**
    * @description 验证令牌是否有效
@@ -59,7 +72,7 @@ export class Login {
   getNewToken(serverToken: string) {
     this.gmAjax.ajaxRequest(
       `${LOGIN_SERVER}login`,
-      { GMSSO_SERVER_EC: serverToken, appKey: APP_KEY, service: `http://192.168.5.35:8048/ldimp/registration-platform` }, // 暂时用假路径
+      { GMSSO_SERVER_EC: serverToken, appKey: APP_KEY, service: document.location.origin },
       { method: `get` }
     ).subscribe(response => {
       if (response && response.success === true && response.data != null && response.data.gmsso_ser_ec_key !== '') {

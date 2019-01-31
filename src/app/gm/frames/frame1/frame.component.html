@@ -1,6 +1,23 @@
 <nz-layout class="layout max-height">
   <nz-header>
     <div class="logo">ANGULAR7-DEMO</div>
+    <div class="header-right">
+      <span class="user">
+        <nz-dropdown [nzPlacement]="'bottomRight'">
+        <!-- <span nz-dropdown><i nz-icon type="smile" theme="outline"></i><span>{{userInfo$.realName | async}}</span></span> -->
+        <span class="user-name" nz-dropdown><i nz-icon type="smile" theme="outline"></i><span class="name">甘肃省用户</span></span>
+        <ul nz-menu>
+          <li nz-menu-item>
+            <a>个人中心</a>
+          </li>
+          <li class=" ant-dropdown-menu-item-divider"></li>
+          <li nz-menu-item>
+            <a (click)="logout()">退出登录</a>
+          </li>
+        </ul>
+      </nz-dropdown>
+      </span>
+    </div>
   </nz-header>
   <nz-layout class="max-height">
     <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate">
