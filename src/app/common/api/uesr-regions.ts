@@ -18,7 +18,7 @@ export class UserRegions {
    * @description 获取用户
    * @method getUser
    */
-  getUser() {
+  getUser(fun: Function, that) {
     if (!GM.get('userInfo')) {
       let userInfo;
       ajax({
@@ -46,6 +46,7 @@ export class UserRegions {
               GM.set('userInfo', userInfo);
               this.setAreas(userInfo.organizations, results[1]);
               this.setOrganization(userInfo.organizations, results[2]);
+              fun(that);
             });
         });
     }

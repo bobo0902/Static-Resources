@@ -49,7 +49,7 @@ export class Login {
    * @method isTokenValid
    * @param strToken token
    */
-  isTokenValid(strToken: string) {
+  isTokenValid(strToken: string, logouturl: string) {
     this.gmAjax.ajaxRequest(
       `${LOGIN_SERVER}checkTokenByAppKey`,
       { token: strToken, appKey: APP_KEY },
@@ -60,7 +60,7 @@ export class Login {
           // token可用
           this.cookie.addCookie('clientServerToken', response.data.gmsso_ser_ec_key);
         } else {
-          this.getNewToken(this.cookie.getCookie(`clientServerToken`));
+          this.getNewToken(this.cookie.getCookie(`clientServerToken`), logouturl);
         }
       });
   }
@@ -69,7 +69,7 @@ export class Login {
    * @method getNewToken
    * @param serverToken token
    */
-  getNewToken(serverToken: string) {
+  getNewToken(serverToken: string, logouturl: string) {
     this.gmAjax.ajaxRequest(
       `${LOGIN_SERVER}login`,
       { GMSSO_SERVER_EC: serverToken, appKey: APP_KEY, service: document.location.origin },
@@ -79,6 +79,7 @@ export class Login {
         this.cookie.addCookie('clientServerToken', response.data.gmsso_ser_ec_key);
       } else {
         this.message.create('error', response.message);
+        this.logout(logouturl);
       }
     });
   }

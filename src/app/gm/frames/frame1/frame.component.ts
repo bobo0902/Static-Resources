@@ -1,4 +1,4 @@
-import { Component, ViewChild, TemplateRef, Input } from '@angular/core';
+import { Component, ViewChild, TemplateRef, Input, AfterContentInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { filter, map, mergeMap } from 'rxjs/operators';
@@ -7,9 +7,15 @@ import { Login } from '../login/login';
 import { Cookie, UserRegions, GM } from '../../../common/api';
 import { NzMessageService } from 'ng-zorro-antd';
 import { LOGIN_PATH } from 'url-config';
+import { Observable, observable } from 'rxjs';
 
 interface FrameConfig {
   navi: Array<object>;
+}
+
+interface UserInfo {
+  realName: string;
+  id: string;
 }
 
 @Component({
@@ -27,7 +33,7 @@ export class Fram1Component {
   tabs: Array<{ title: string, url: string }> = [];
   tabActiveIndex: Number = 0;
   // 用户信息
-  userInfo$ = {};
+  userInfoRealName = new Observable();
 
   // 登录
   login = new Login(this.message);
@@ -58,8 +64,8 @@ export class Fram1Component {
     this.router.navigateByUrl(menu.url);
   }
 
-  setUserInfo() {
-    this.userInfo$ = GM.get('userInfo');
+  setUserInfo(that) {
+    that.userInfoRealName = GM.get('userInfo').realName;
   }
 
   logout() {
@@ -104,11 +110,12 @@ export class Fram1Component {
     // 验证登录
     let strToken = this.cookie.getCookie('clientCliToken');
     if (strToken) {
-      this.login.isTokenValid(strToken);
+      this.login.isTokenValid(strToken, LOGIN_PATH);
     } else {
       this.login.logout(LOGIN_PATH);
     }
-    this.getUserInfo.getUser();
+    this.getUserInfo.getUser(this.setUserInfo, this);
   }
+
 }
 
